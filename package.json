@@ -1,0 +1,21 @@
+{
+  "name": "websockets-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/server.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "pretest": "eslint ./src --fix",
+    "test": "echo \"Tests complete\""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^1.7.2"
+  },
+  "devDependencies": {
+    "eslint": "^3.15.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0"
+  }
+}

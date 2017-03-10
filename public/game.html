@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!-- This is the page for the player to see, where they control the game from -->
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Dungeon Bums</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: monospace;
+			font-size: 2vw;
+			width: 100vw;
+			height: 100vw;
+			overflow: hidden;
+			/* no highlight text */
+			  -webkit-touch-callout: none; /* iOS Safari */
+			  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+			  -khtml-user-select: none;    /* Konqueror */
+			  -moz-user-select: none;      /* Firefox */
+			  -ms-user-select: none;       /* Internet Explorer/Edge */
+			background-color: black;
+		}
+		
+		canvas {
+			width: 100vw;
+		}
+		
+		#controls {
+			font-family: monospace;
+			width: 100vw;
+			height: 100vw;
+		}
+		#controls td {
+			width: 33vw;
+			height: 33vw;
+			text-align: center;
+			background-color: lightgray;
+		}
+		#controls td:active {
+			background-color: gray;
+		}
+		#healthContainer {
+			width: 98vw;
+			height: 10vw;
+			padding: 1vw;
+			background-color: lightgray;
+		}
+		#healthBar {
+			width: 100%;
+			height: calc(100% - 2vw);
+			background-color: red;
+			text-align: center;
+			padding-top: 2vw;
+		}
+		#resultsContainer {
+			background-color: black;
+			color: white;
+		}
+		#resultsContainer header {
+			color: black;
+			padding-left: 2vw;
+			background-color: lightgray;
+		}
+		#resultsInner {
+			padding-left: 2vw;
+			height: calc(100% - 9vw);
+			overflow-y: scroll;
+		}
+		.follow {
+			background-color: blue;
+			color: white;
+			font-size: 110%;
+		}
+	</style>
+</head>
+<body>
+	<p class="follow">bit.do/dbums</p>	
+	<!--<div id="resultsContainer">
+		<header>Outcome:</header>
+		<div id="resultsInner">
+		</div>
+	</div>-->
+	<canvas width="1280" height="720"></canvas>
+	<div id="fullscreenBtn" style="float: right; text-decoration: underline; color: blue; cursor: pointer;">Click for fullscreen</div>
+</body>
+<script src="socketio.min.js"></script>
+<!-- script execution order is important -->
+<script src='foundation.js'></script>
+<script src='constants.js'></script>
+<script src='utilities.js'></script>
+<script src='effects.js'></script>
+<script src='game.js'></script> 
+<script src='dungeon.js'></script>
+<script src='enemies.js'></script>
+<script src='player.js'></script>
+<script src='items.js'></script>
+<script>
+	var output;
+	var socket;
+	
+	function init() {
+		if (!offline) setupSocketIO();
+		output = document.getElementById("resultsInner");
+		print("Ready to begin");
+	}
+	function print(str) {
+		//output.innerHTML = str + "<br>" + output.innerHTML;
+	}
+	function send(recipientName, msg) {
+		if (offline) return;
+		var json = '{ "name": "' + recipientName + '", "message": "'+msg+'"}';
+		socket.emit('feedback',json);
+	}
+	window.onload = init();
+	function setupSocketIO() {
+	  socket = io();
+	  socket.emit('assert game', 'I am the game client');
+	  var buttons = document.querySelectorAll("td");
+      /*for (var i=0; i<buttons.length; i++) {
+		  var setClick = function(btn) {
+			  btn.onclick = function(){
+			  	console.log("button clicked");
+				socket.emit('chat message', btn.innerHTML);
+				return false;
+			  }
+		   }
+		   setClick(buttons[i]);
+      }*/
+      socket.on('output', function(msg){
+        //print(msg);
+        handlePlayerInput(msg);
+      });
+      socket.on('add player', function(msg) {
+      	var o = JSON.parse(msg);
+      	addPlayer(o.name, o.type);
+      });
+      socket.on('key', function(msg) {
+      	document.querySelector(".follow").innerHTML = document.querySelector(".follow").innerHTML + "<br>room key: "  + msg;
+      });
+    }
+    </script>

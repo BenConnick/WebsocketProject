@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!-- This is the page for the player to see, where they control the game from -->
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<link href="https://fonts.googleapis.com/css?family=IM+Fell+English+SC" rel="stylesheet">
+	<title>Dungeon Bums</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: 'IM Fell English SC', serif;
+			font-size: 7vw;
+			/*overflow: hidden;*/
+			/* no highlight text */
+			  -webkit-touch-callout: none; /* iOS Safari */
+			  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+			  -khtml-user-select: none;    /* Konqueror */
+			  -moz-user-select: none;      /* Firefox */
+			  -ms-user-select: none;       /* Internet Explorer/Edge */
+			  user-select: none;           /* Non-prefixed version, currently
+											  not supported by any browser */
+		}
+        input {
+            width: 50vw;
+            height: 5vw;
+        }
+		#controls {
+			position: fixed;
+			font-family: 'IM Fell English SC', serif;
+			width: 100vw;
+			height: 66vw;
+			bottom: 0em;
+			left: 0em;
+			z-index: 10;
+			background-color: black;
+		}
+		#controls td {
+			width: 33%;
+			height: 33%;
+			text-align: center;
+			padding: 1vw;
+			
+			background: #ffffff; /* Old browsers */
+			background: -moz-radial-gradient(center, ellipse cover,  #ffffff 0%, #e5e5e5 82%); /* FF3.6-15 */
+			background: -webkit-radial-gradient(center, ellipse cover,  #ffffff 0%,#e5e5e5 82%); /* Chrome10-25,Safari5.1-6 */
+			background: radial-gradient(ellipse at center,  #ffffff 0%,#e5e5e5 82%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+
+		}
+		#controls td:active {
+			background: gray;
+		}
+		
+		#inventory {
+			position: fixed;
+			top: 14vw;
+			width: 100vw;
+			height: 100vw;
+		}
+		
+		#inventory td {
+			border: solid 1vw #555;
+			background-color: #777;
+		}
+		
+		#inventory td div {
+			width: 30vw;
+			height: 30vw;
+			background-size: 100%;
+		}
+		
+		#gold {
+			top: 112vw;
+		}
+		
+		#healthSpacer {
+			height: 48vw;
+			width: 100vw;
+		}
+		#healthContainer {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: calc(96vw);
+			height: 10vw;
+			padding: 2vw;
+			background-color: black;
+		}
+		#healthBar {
+			width: 100%;
+			height: calc(100% - 1vw);
+			text-align: center;
+			padding-top: 1vw;
+			
+			background: #f85032; /* Old browsers */
+			background: -moz-linear-gradient(top,  #f85032 0%, #f16f5c 36%, #f16f5c 36%, #f16f5c 61%, #f6290c 87%, #f02f17 92%, #e73827 100%); /* FF3.6-15 */
+			background: -webkit-linear-gradient(top,  #f85032 0%,#f16f5c 36%,#f16f5c 36%,#f16f5c 61%,#f6290c 87%,#f02f17 92%,#e73827 100%); /* Chrome10-25,Safari5.1-6 */
+			background: linear-gradient(to bottom,  #f85032 0%,#f16f5c 36%,#f16f5c 36%,#f16f5c 61%,#f6290c 87%,#f02f17 92%,#e73827 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+
+		}
+		#resultsContainer {
+			background-color: black;
+			color: white;
+			height: 18em;
+		}
+		#resultsContainer header {
+			color: black;
+			padding-left: 0.5em;
+			background-color: lightgray;
+		}
+		#resultsInner {
+			padding-left: 0.5em;
+			height: 100%;
+			overflow-y: scroll;
+		}
+        #nameScreen {
+            text-align: center;
+        }
+		#controllerScreen {
+			display: none;
+		}
+		#waitingForPlayers {
+			position: absolute;
+			left: 25%;
+			top: 5em;
+			z-index: -1;
+			display: none;
+		}
+		.counter {
+			display: fixed;
+			position: relative;
+			top: 0vw;
+			left: 0vw;
+			width: 10vw;
+			height: 10vw;
+			text-align: center;
+			border-radius: 100vw;
+			
+			border: solid 1vw #fff;
+			padding: 0em;
+			margin: 0em;
+		}
+        .leftHanded {
+		}
+		.rightHanded {
+			left: 0;
+		}
+		.slot {
+			width: 30vw;
+			height: 30vw;
+			float: left;
+			border: solid 1vw #555;
+			background-color: #777;
+			z-index: -1;
+			margin-left: 1vw;
+			margin-top: 1vw;
+		}
+		
+		.slot .pic {
+			position: relative;
+			top: -8vw;
+			width: 25vw;
+			height: 25vw;
+			background-size: 100%;
+			margin: auto;
+		}
+		.highlight {
+			background-color: #aa0;
+			border: solid 1vw #880;
+		}
+		
+		.r {
+			background-color: #faa;
+		}
+		
+		.g {
+			background-color: #afa;
+		}
+		
+		.b {
+			background-color: #aaf;
+		}
+	</style>
+</head>
+<body>
+	<div id="nameScreen">
+        <br>
+		<span>Enter a name</span><br/>
+		<input type="text" id="nameInput"></input><br/><br/>
+		<span>Enter the room code</span><br><input type="text" id="roomInput"></input><br/>
+		<button id="submitBtn">DONE</button>
+	</div>
+	</div>
+	<div id="controllerScreen">
+		<!--<div id="healthContainer">
+			<div id="healthBar">20/20</div>
+		</div>-->
+		<div id="healthContainer">
+			<div id="healthBar">10/10</div>
+		</div>
+		<div id="healthSpacer"></div>
+		<div id="inventory">
+			<div class="slot">
+				<div class="counter r">0</div>
+			</div>
+			<div class="slot">
+				<div class="counter g">0</div>
+			</div>
+			<div class="slot">
+				<div class="counter b">0</div>
+			</div>
+		</div>
+		<table id="controls">
+			<tr>
+				<td id="stairsBtn">use [stairs]</td>
+				<td id="upBtn"><strong>UP</strong></td>
+				<td id="goldBtn">Gold:<br>0</td>
+			</tr>
+			<tr>
+				<td id="leftBtn"><strong>LEFT</strong></td>
+				<td id="downBtn"><strong>DOWN</strong></td>
+				<td id="rightBtn"><strong>RIGHT</strong></td>
+			</tr>
+		</table>
+		<div id="resultsContainer">
+			<header></header>
+			<div id="resultsInner"></div>
+		</div>
+		<audio controls>
+			<source src="poison.wav" type="audio/wav">
+ 		</audio>
+	</div>
+</body>
+<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+<script src="socketio.min.js"></script>
+<script src="utilities.js"></script>
+<script src="inventory.js"></script>
+<script src="controller.js"></script>
