@@ -9,12 +9,29 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 // const index = fs.readFileSync(`${__dirname}/../client/client.html`);
 const controllerPage = fs.readFileSync(`${__dirname}/../public/controller.html`);
+const hostPage = fs.readFileSync(`${__dirname}/../public/game.html`);
 
 const onRequest = (request, response) => {
+  switch(request.url) {
+    case "/game":
+      serveHost(response);
+      break;
+    default:
+      serveController(response);
+  }
+};
+
+const serveController = (response) => {
   response.writeHead(200, { 'Content-Type': 'text/html' });
   response.write(controllerPage);
   response.end();
-};
+}
+
+const serveHost = (response) => {
+  response.writeHead(200, { 'Content-Type': 'text/html' });
+  response.write(hostPage);
+  response.end();
+}
 
 const app = http.createServer(onRequest).listen(port);
 

@@ -1,11 +1,16 @@
-# fathomless dungeon
+This is a websockets project
 
-Fathomless Dungeon is a javascript game played using one computer and up to 8 phones.
+The contents of this directory are NOT the project, they are just old resources the project will be based on.
 
-Current address: 
-http://fathomless-depths-67369.herokuapp.com/
-Shortened:
-http://bit.do/qqq3
+In the "public" directory are the old ES5 client scripts. 
 
-To get to the desktop (computer) version, use the /game extension
-http://fathomless-depths-67369.herokuapp.com/game
+old_server.js is the old ES5 server, currently the project deploys using src/server.js, which is just the chat assignment
+
+Heroku:
+https://dungeon-dive.herokuapp.com/
+
+Github:
+https://github.com/BenConnick/WebsocketProject
+
+CircleCI
+https://circleci.com/gh/BenConnick/WebsocketProject/1
