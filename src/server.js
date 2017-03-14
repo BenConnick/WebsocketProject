@@ -1,37 +1,43 @@
+/* 
+*  server.js
+*  author: Ben Connick
+*  last modified: 03/14/17
+*  purpose: handle socket events, serve files to the clients
+*/
+
 const http = require('http');
 const fs = require('fs');
 const socketio = require('socket.io');
 
-// const htmlHandler = require('./htmlResponses.js');
-// const mediaHandler = require('./mediaResponses.js');
+const fileHandler = require('./fileHandler.js');
+const playerHandler = require("./playerHandler.js");
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
-// const index = fs.readFileSync(`${__dirname}/../client/client.html`);
-const controllerPage = fs.readFileSync(`${__dirname}/../public/controller.html`);
-const hostPage = fs.readFileSync(`${__dirname}/../public/game.html`);
-
+// handle requests
 const onRequest = (request, response) => {
   switch(request.url) {
+    case "/":
+      fileHandler.serveController(response);
+      break;
     case "/game":
-      serveHost(response);
+      fileHandler.serveHost(response);
       break;
     default:
-      serveController(response);
+      // scripts
+      if (request.url.indexOf(".js") > -1) {
+        fileHandler.serveScript(request.url, response)
+      } 
+      // images
+      else if (request.url.indexOf(".png") > -1) {
+        // ONLY WORKS FOR PNG RIGHT NOW
+        fileHandler.serveImage(request.url, response);
+      // invalid request
+      } else {
+        response.end();
+      }
   }
 };
-
-const serveController = (response) => {
-  response.writeHead(200, { 'Content-Type': 'text/html' });
-  response.write(controllerPage);
-  response.end();
-}
-
-const serveHost = (response) => {
-  response.writeHead(200, { 'Content-Type': 'text/html' });
-  response.write(hostPage);
-  response.end();
-}
 
 const app = http.createServer(onRequest).listen(port);
 
@@ -47,6 +53,11 @@ const onJoined = (sock) => {
   const socket = sock;
 
   socket.on('join', (data) => {
+  
+  	// handle player joining game
+  	playerHandler.playerJoined(sock,data);
+  
+  	/*
     // message back
     const joinMsg = {
       name: 'server',
@@ -75,22 +86,8 @@ const onJoined = (sock) => {
       // failure message to the user
       socket.emit('msg', { name: 'server', msg: 'Another user already has that name' });
     }
+    */
   });
-};
-
-const roll = (name, die) => {
-  console.log(`${name} wants to roll a d${die}`);
-  switch (die) {
-    case '4':
-    case '6':
-    case '8':
-    case '10':
-    case '12':
-    case '20':
-      return `${name} rolled a d${die} and got a ${Math.floor(Math.random() * die)}`;
-    default:
-      return undefined;
-  }
 };
 
 const onMsg = (sock) => {
