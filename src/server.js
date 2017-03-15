@@ -1,4 +1,4 @@
-/* 
+/*
 *  server.js
 *  author: Ben Connick
 *  last modified: 03/14/17
@@ -6,30 +6,28 @@
 */
 
 const http = require('http');
-const fs = require('fs');
 const socketio = require('socket.io');
 
 const fileHandler = require('./fileHandler.js');
-const playerHandler = require("./playerHandler.js");
+const playerHandler = require('./playerHandler.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 // handle requests
 const onRequest = (request, response) => {
-  switch(request.url) {
-    case "/":
+  switch (request.url) {
+    case '/':
       fileHandler.serveController(response);
       break;
-    case "/game":
+    case '/game':
       fileHandler.serveHost(response);
       break;
     default:
       // scripts
-      if (request.url.indexOf(".js") > -1) {
-        fileHandler.serveScript(request.url, response)
-      } 
+      if (request.url.indexOf('.js') > -1) {
+        fileHandler.serveScript(request.url, response);
       // images
-      else if (request.url.indexOf(".png") > -1) {
+      } else if (request.url.indexOf('.png') > -1) {
         // ONLY WORKS FOR PNG RIGHT NOW
         fileHandler.serveImage(request.url, response);
       // invalid request
@@ -53,11 +51,10 @@ const onJoined = (sock) => {
   const socket = sock;
 
   socket.on('join', (data) => {
-  
-  	// handle player joining game
-  	playerHandler.playerJoined(socket, data);
-  
-  	/*
+    // handle player joining game
+    playerHandler.playerJoined(socket, data);
+
+    /*
     // message back
     const joinMsg = {
       name: 'server',
@@ -95,17 +92,17 @@ const onInput = (sock) => {
 
   socket.on('input', (data) => {
     // parse message
-    playerHandler.parsePlayerInput(socket,data);
+    playerHandler.parsePlayerInput(socket, data);
   });
 };
 
 const onHostAnnounce = (sock) => {
-	const socket = sock;
-	
-	socket.on('assert game', (data) => {
-		playerHandler.hostGame(sock,data);
-	}); 
-}
+  const socket = sock;
+
+  socket.on('assert game', (data) => {
+    playerHandler.hostGame(sock, data);
+  });
+};
 
 const onDisconnect = (sock) => {
   const socket = sock;
@@ -128,7 +125,7 @@ const onDisconnect = (sock) => {
 
 io.sockets.on('connection', (socket) => {
   console.log('started');
-  
+
   playerHandler.trackSocket(socket);
 
   onJoined(socket);
