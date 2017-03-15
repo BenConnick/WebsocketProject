@@ -15,6 +15,10 @@ var waitingMsg;
 var failSafe;
 var itemInfo = ""; // send item info to the game
 
+// controller properties
+var useClickOnly = false;
+var useTouchOnly = false;
+
 // CONTROLLER FUNCTIONS
 
 // set up on start
@@ -172,15 +176,21 @@ function setupSocketIO() {
 	  var setClick = function(btn) {
 	  	  // only fire one of these, click or touch, not both
 	      btn.addEventListener("click",function(){
-			simulateButtonPress(btn.textContent);
+	      	if (!useClickOnly && !useTouchOnly) 
+	      		useClickOnly = true;
+	      	if (useClickOnly)
+				simulateButtonPress(btn.textContent);
 			return false;
 		  });
 		  // use this for mobile
 		  // commented out because it doesn't work with mouse
-		  /*btn.addEventListener("touchstart",function(){
-			simulateButtonPress(btn.textContent);
+		  btn.addEventListener("touchstart",function(){
+		  	if (!useClickOnly && !useTouchOnly) 
+	      		useTouchOnly = true;
+	      	if (useTouchOnly)
+				simulateButtonPress(btn.textContent);
 			return false;
-		  });*/
+		  });
 	   }
 	   setClick(buttons[i]);
   }
