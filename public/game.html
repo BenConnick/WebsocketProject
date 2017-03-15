@@ -102,7 +102,7 @@
 	function init() {
 		if (!offline) setupSocketIO();
 		output = document.getElementById("resultsInner");
-		print("Ready to begin");
+		console.log("Ready to begin");
 	}
 	function print(str) {
 		//output.innerHTML = str + "<br>" + output.innerHTML;
@@ -112,7 +112,7 @@
 		var json = '{ "name": "' + recipientName + '", "message": "'+msg+'"}';
 		socket.emit('feedback',json);
 	}
-	window.onload = init();
+	window.addEventListener("load",init);
 	function setupSocketIO() {
 	  socket = io();
 	  socket.emit('assert game', 'I am the game client');

@@ -1,10 +1,10 @@
 // Inventory on the controller
 
 var images = {
-	"red potion" : "images/large_potions/pt1.png",
-	"green potion" : "images/large_potions/pt3.png",
-	"blue potion" : "images/large_potions/pt2.png",
-	"orange potion" : "images/large_potions/pt4.png"
+	"red potion" : "images/pt1.png",
+	"green potion" : "images/pt3.png",
+	"blue potion" : "images/pt2.png",
+	"orange potion" : "images/pt4.png"
 }
 
 var potions = [

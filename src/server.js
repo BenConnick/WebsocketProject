@@ -55,7 +55,7 @@ const onJoined = (sock) => {
   socket.on('join', (data) => {
   
   	// handle player joining game
-  	playerHandler.playerJoined(sock,data);
+  	playerHandler.playerJoined(socket, data);
   
   	/*
     // message back
@@ -94,52 +94,17 @@ const onMsg = (sock) => {
   const socket = sock;
 
   socket.on('msgToServer', (data) => {
-    // serverside commands
-    if (data.msg.length > 0 && data.msg[0] === '/') {
-      if (data.msg.length > 1) {
-        switch (data.msg[1]) {
-          // roll
-          case 'r':
-            if (data.msg.length > 3) {
-              const r = roll(socket.name, data.msg.substring(3));
-              if (r === undefined) {
-                socket.emit('msg', { name: 'server', msg: 'Invalid die type. Valid die types are d4, d6, d8, d10, d12, and d20' });
-                return;
-              }
-              io.sockets.in('room1').emit('msg', { name: 'server', msg: r });
-              return;
-            }
-            break;
-          // me
-          case 'm':
-            if (data.msg.length > 3) {
-              if (data.msg.substring(2, 4) === 'e ') {
-                io.sockets.in('room1').emit('msg', { name: 'server', msg: `${socket.name} ${data.msg.substring(4)}` });
-                return;
-              }
-            }
-            break;
-          // time
-          case 't':
-            if (data.msg.indexOf('/time') > -1) {
-              const d = new Date();
-              socket.emit('msg', { name: 'server', msg: `Current time is ${d.toTimeString()}` });
-              return;
-            }
-            break;
-          default:
-            break;
-        }
-      }
-
-      // if we arrived here, no command was valid.
-      socket.emit('msg', { name: socket.name, msg: `Command ${data.msg.substring(1)} not understood. Valid commands are "/rd[die number of sides]", "/me [your action]", "/time"` });
-      return;
-    }
-
     io.sockets.in('room1').emit('msg', { name: socket.name, msg: data.msg });
   });
 };
+
+const onHostAnnounce = (sock) => {
+	const socket = sock;
+	
+	socket.on('assert game', (data) => {
+		playerHandler.hostGame(sock,data);
+	}); 
+}
 
 const onDisconnect = (sock) => {
   const socket = sock;
@@ -162,8 +127,11 @@ const onDisconnect = (sock) => {
 
 io.sockets.on('connection', (socket) => {
   console.log('started');
+  
+  playerHandler.trackSocket(socket);
 
   onJoined(socket);
+  onHostAnnounce(socket);
   onMsg(socket);
   onDisconnect(socket);
 });
