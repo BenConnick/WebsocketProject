@@ -128,7 +128,6 @@
 		   setClick(buttons[i]);
       }*/
       socket.on('output', function(msg){
-        //print(msg);
         handlePlayerInput(msg);
       });
       socket.on('add player', function(msg) {

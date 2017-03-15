@@ -95,7 +95,6 @@ const onInput = (sock) => {
 
   socket.on('input', (data) => {
     // parse message
-    console.log(data);
     playerHandler.parsePlayerInput(socket,data);
   });
 };

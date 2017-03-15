@@ -6,7 +6,6 @@
 */
 
 // list of sockets and names
-const playerNames = [];
 const players = [];
 const gameClients = [];
 
@@ -18,7 +17,7 @@ const playerJoined = (socket, msg) => {
   // parse join args
   const join = JSON.parse(msg);
   // if the name is already taken
-  if (playerNames.indexOf(join.name) > -1) {
+  if (indexOfElemWithProperty(players,"name",join.name) > -1) {
     socket.emit('join status', 'name taken');
   } 
   else {
@@ -34,8 +33,9 @@ const playerJoined = (socket, msg) => {
       
       // join the room
       socket.join(join.roomKey);
+      players[players.length - 1].room = join.roomKey;
       gameClient.emit('add player', '{ "name" : "' + join.name + '"}');
-      playerNames[idx] = join.name;
+      players[players.length - 1].name = join.name;
       socket.emit('join status', 'success');
       
       // debug
@@ -45,16 +45,15 @@ const playerJoined = (socket, msg) => {
 }
 
 const parsePlayerInput = (socket, msg) => {
-  const gameClient = getHostSocketFromRoom(socket.rooms[1])
-  
+  const gameClient = getHostSocketFromRoom(getPlayerRoomFromSocket(socket));
   // if there is no game client, do nothing
   if (!gameClient) return;
-  
   // object
   const o = JSON.parse(msg);
   if (o) {
 	// pass json string to game client
-	gameClient.emit('output', msg); 
+	//gameClient.emit('output', msg); 
+	socket.broadcast.to(gameClient.id).emit('output', msg);
   }
   else {
   	console.log("invalid input: " + msg);
@@ -65,10 +64,9 @@ const parsePlayerInput = (socket, msg) => {
 // ----------------------------------
 const hostGame = (socket) => {
 	// remove from player list
-	const idx = players.indexOf(socket);
+	const idx = indexOfElemWithProperty(players,"socket",socket);
 	if (idx != undefined) {
 		players.splice(idx, 1);
-		playerNames.splice(idx, 1);
 	}
 	// create a room key
 	let key = "";
@@ -82,7 +80,7 @@ const hostGame = (socket) => {
 	socket.join(key);
 	
 	// debug
-	console.log("key " + key + "assigned to socket id# " + socket.id);
+	console.log("key " + key + " assigned to socket id# " + socket.id);
 	
 	// server acknowledge key creation successful
 	socket.emit("key", key);
@@ -102,20 +100,29 @@ const indexOfElemWithProperty = (arrayOfObjects, propertyName, match) => {
 }
 
 const getPlayerSocketFromName = (name) => {
-	let id = playerNames.indexOf(name);
+	let id = indexOfElemWithProperty(players, "name", name);
 	if (id < 0) {
 		return undefined;
 	} else {
-		return players[id];
+		return players[id].socket;
 	}
 }
 
 const getPlayerNameFromSocket = (socket) => {
-	let id = players.indexOf(socket);
+	let id = indexOfElemWithProperty(players, "socket", socket);
 	if (id < 0) {
 		return undefined;
 	} else {
-		return playerNames[id];
+		return players[id].name;
+	}
+}
+
+const getPlayerRoomFromSocket = (socket) => {
+	let id = indexOfElemWithProperty(players, "socket", socket);
+	if (id < 0) {
+		return undefined;
+	} else {
+		return players[id].room;
 	}
 }
 
@@ -139,8 +146,7 @@ const getHostRoomFromSocket = (socket) => {
 
 const trackSocket = (socket) => {
   // add the client
-  players.push(socket);
-  playerNames.push("unknown");
+  players.push({"socket": socket,"name": "unknown", "room": "no room"});
 }
 
 // roomcode generator
