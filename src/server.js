@@ -90,11 +90,13 @@ const onJoined = (sock) => {
   });
 };
 
-const onMsg = (sock) => {
+const onInput = (sock) => {
   const socket = sock;
 
-  socket.on('msgToServer', (data) => {
-    io.sockets.in('room1').emit('msg', { name: socket.name, msg: data.msg });
+  socket.on('input', (data) => {
+    // parse message
+    console.log(data);
+    playerHandler.parsePlayerInput(socket,data);
   });
 };
 
@@ -132,7 +134,7 @@ io.sockets.on('connection', (socket) => {
 
   onJoined(socket);
   onHostAnnounce(socket);
-  onMsg(socket);
+  onInput(socket);
   onDisconnect(socket);
 });
 

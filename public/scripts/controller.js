@@ -168,15 +168,19 @@ function simulateButtonPress(buttonString) {
 function setupSocketIO() {
   var buttons = document.querySelectorAll("td");
   for (var i=0; i<buttons.length; i++) {
-  
   	  // universal touch event for all buttons
 	  var setClick = function(btn) {
-		  btn.addEventListener("touchstart",function(){
-			
+	  	  // only fire one of these, click or touch, not both
+	      btn.addEventListener("click",function(){
 			simulateButtonPress(btn.textContent);
-			
 			return false;
 		  });
+		  // use this for mobile
+		  // commented out because it doesn't work with mouse
+		  /*btn.addEventListener("touchstart",function(){
+			simulateButtonPress(btn.textContent);
+			return false;
+		  });*/
 	   }
 	   setClick(buttons[i]);
   }

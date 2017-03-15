@@ -44,6 +44,23 @@ const playerJoined = (socket, msg) => {
   }
 }
 
+const parsePlayerInput = (socket, msg) => {
+  const gameClient = getHostSocketFromRoom(socket.rooms[1])
+  
+  // if there is no game client, do nothing
+  if (!gameClient) return;
+  
+  // object
+  const o = JSON.parse(msg);
+  if (o) {
+	// pass json string to game client
+	gameClient.emit('output', msg); 
+  }
+  else {
+  	console.log("invalid input: " + msg);
+  }
+}
+
 // when a client creates a game, remove the client from the player list
 // ----------------------------------
 const hostGame = (socket) => {
@@ -132,6 +149,7 @@ const getRandomLetter = () => {
 	return letters[Math.floor(Math.random()*26)];
 }
 
+module.exports.parsePlayerInput = parsePlayerInput;
 module.exports.playerJoined = playerJoined;
 module.exports.hostGame = hostGame;
 module.exports.getPlayerSocketFromName = getPlayerSocketFromName;
