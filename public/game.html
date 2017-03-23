@@ -86,56 +86,13 @@
 </body>
 <script src="socketio.min.js"></script>
 <!-- script execution order is important -->
-<script src='foundation.js'></script>
-<script src='constants.js'></script>
-<script src='utilities.js'></script>
-<script src='effects.js'></script>
-<script src='game.js'></script> 
-<script src='dungeon.js'></script>
-<script src='enemies.js'></script>
-<script src='player.js'></script>
-<script src='items.js'></script>
-<script>
-	var output;
-	var socket;
-	
-	function init() {
-		if (!offline) setupSocketIO();
-		output = document.getElementById("resultsInner");
-		console.log("Ready to begin");
-	}
-	function print(str) {
-		//output.innerHTML = str + "<br>" + output.innerHTML;
-	}
-	function send(recipientName, msg) {
-		if (offline) return;
-		var json = '{ "name": "' + recipientName + '", "message": "'+msg+'"}';
-		socket.emit('feedback',json);
-	}
-	window.addEventListener("load",init);
-	function setupSocketIO() {
-	  socket = io();
-	  socket.emit('assert game', 'I am the game client');
-	  var buttons = document.querySelectorAll("td");
-      /*for (var i=0; i<buttons.length; i++) {
-		  var setClick = function(btn) {
-			  btn.onclick = function(){
-			  	console.log("button clicked");
-				socket.emit('chat message', btn.innerHTML);
-				return false;
-			  }
-		   }
-		   setClick(buttons[i]);
-      }*/
-      socket.on('output', function(msg){
-        handlePlayerInput(msg);
-      });
-      socket.on('add player', function(msg) {
-      	var o = JSON.parse(msg);
-      	addPlayer(o.name, o.type);
-      });
-      socket.on('key', function(msg) {
-      	document.querySelector(".follow").innerHTML = document.querySelector(".follow").innerHTML + "<br>room key: "  + msg;
-      });
-    }
-    </script>
+<script src='foundation.js' type='text/babel'></script>
+<script src='constants.js' type='text/babel'></script>
+<script src='utilities.js' type='text/babel'></script>
+<script src='effects.js' type='text/babel'></script>
+<script src='game.js' type='text/babel'></script> 
+<script src='dungeon.js' type='text/babel'></script>
+<script src='enemies.js' type='text/babel'></script>
+<script src='player.js' type='text/babel'></script>
+<script src='items.js' type='text/babel'></script>
+<script src='gameSocket.js' type='text/babel'></script>
