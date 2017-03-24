@@ -8,7 +8,7 @@
     "watch": "babel --watch ./public/scripts/host --out-file ./public/scripts/bundle.js",
     "nodemon": "nodemon --watch ./src ./src/server.js",
     "start": "node ./src/server.js",
-    "pretest": "eslint ./src --fix",
+    "pretest": "eslint ./src ./public/scripts/host --fix",
     "test": "echo \"Tests complete\""
   },
   "author": "",
