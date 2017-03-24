@@ -1,28 +1,30 @@
+'use strict';
+
 // CONTROLLER VARIABLES
 
 // html elements
-let outputDiv;
-let controls;
-let hpBar;
+var outputDiv = void 0;
+var controls = void 0;
+var hpBar = void 0;
 
 // sockets and online things
-const controllerSocket = io();
-let name = 'bob';
-let roomKey = '';
+var controllerSocket = io();
+var name = 'bob';
+var roomKey = '';
 
 // gameplay utils
-let waitingMsg;
-let failSafe;
-let itemInfo = ''; // send item info to the game
+var waitingMsg = void 0;
+var failSafe = void 0;
+var itemInfo = ''; // send item info to the game
 
 // controller properties
-let useClickOnly = false;
-let useTouchOnly = false;
+var useClickOnly = false;
+var useTouchOnly = false;
 
 // CONTROLLER FUNCTIONS
 
 // set up on start
-const appInit = () => {
+var appInit = function appInit() {
   // get controls table
   controls = document.getElementById('controls');
   // get hp bar
@@ -32,7 +34,7 @@ const appInit = () => {
   // waiting message
   waitingMsg = document.getElementById('waitingForPlayers');
   // hook up name button
-  const submit = document.getElementById('submitBtn');
+  var submit = document.getElementById('submitBtn');
   submit.onclick = function () {
     console.log('join');
     attemptJoin();
@@ -54,39 +56,39 @@ const appInit = () => {
 };
 
 // join a game
-const attemptJoin = () => {
+var attemptJoin = function attemptJoin() {
   name = document.getElementById('nameInput').value;
   roomKey = document.getElementById('roomInput').value.toUpperCase();
-  const json = `{ "name": "${name}", ` + `"roomKey": "${roomKey}" }`;
+  var json = '{ "name": "' + name + '", ' + ('"roomKey": "' + roomKey + '" }');
   controllerSocket.emit('join', json);
 };
 
 // game replied OK
-const joinSucceed = () => {
+var joinSucceed = function joinSucceed() {
   document.getElementById('nameScreen').style.display = 'none';
   document.getElementById('controllerScreen').style.display = 'block';
   // show welcome msg
-  output(`Welcome, ${name}`);
+  output('Welcome, ' + name);
 };
 
 // if there was an error, alert
-const joinFail = status => {
+var joinFail = function joinFail(status) {
   alert(status);
 };
 
 // print to the onscreen log
-const output = str => {
-  outputDiv.innerHTML = `${str}<br>${outputDiv.innerHTML.substring(0, 2000)}`;
+var output = function output(str) {
+  outputDiv.innerHTML = str + '<br>' + outputDiv.innerHTML.substring(0, 2000);
 };
 
 // start a turn (not used)
-const turnStart = () => {
+var turnStart = function turnStart() {
   setControlsVisibility(true);
   yourTurnSound.play();
 };
 
 // show the movement controls
-const setControlsVisibility = visible => {
+var setControlsVisibility = function setControlsVisibility(visible) {
   if (visible) {
     controls.style.opacity = 1;
     controls.style.pointerEvents = 'auto';
@@ -101,18 +103,18 @@ const setControlsVisibility = visible => {
 };
 
 // if the connection times out, the controls might be locked
-const updateFailed = () => {
+var updateFailed = function updateFailed() {
   setControlsVisibility(true);
   alert('failsafe triggered after 5 seconds of no message from the server');
 };
 
 // set the healthbar
-const setHealthBar = percent => {
-  hpBar.style.width = `${percent * 100}%`;
+var setHealthBar = function setHealthBar(percent) {
+  hpBar.style.width = percent * 100 + '%';
 };
 
 // debugger
-const mobileDebug = enabled => {
+var mobileDebug = function mobileDebug(enabled) {
   if (enabled) {
     window.onerror = function (errorMsg, url, linenumber) {
       handleErrorMobile(errorMsg, url, linenumber);
@@ -122,12 +124,12 @@ const mobileDebug = enabled => {
   }
 };
 
-const handleErrorMobile = (errorMsg, url, linenumber) => {
-  output(`${errorMsg}: line ${linenumber}`);
+var handleErrorMobile = function handleErrorMobile(errorMsg, url, linenumber) {
+  output(errorMsg + ': line ' + linenumber);
 };
 
 // When the game gives a response, record it
-const handleMessageFromGame = msg => {
+var handleMessageFromGame = function handleMessageFromGame(msg) {
   // player got an item
   if (msg.indexOf('ITEM GET: ') > -1) {
     // add to inventory (handled in inventory.js)
@@ -139,7 +141,7 @@ const handleMessageFromGame = msg => {
 window.addEventListener('load', appInit);
 
 // button pressed, make quick adjustments
-const preSendActions = btnType => {
+var preSendActions = function preSendActions(btnType) {
   // if the action involved an inventory item
   if (btnType.indexOf('drink') >= 0) {
     // send item info to the game
@@ -147,7 +149,7 @@ const preSendActions = btnType => {
   }
 };
 
-const postSendActions = btnType => {
+var postSendActions = function postSendActions(btnType) {
   if (btnType.indexOf('drink') >= 0) {
     drinkPotion(itemInfo);
     // clear meta
@@ -155,12 +157,12 @@ const postSendActions = btnType => {
   }
 };
 
-const simulateButtonPress = buttonString => {
+var simulateButtonPress = function simulateButtonPress(buttonString) {
   // change the item text to fit
   preSendActions(buttonString);
 
   // create a json string with information about the controller's button press
-  const jsonString = `${'{' + '"name": "'}${name}", ` + `"btn": "${buttonString}", ` + `"item": "${itemInfo}" }`;
+  var jsonString = '' + ('{' + '"name": "') + name + '", ' + ('"btn": "' + buttonString + '", ') + ('"item": "' + itemInfo + '" }');
   controllerSocket.emit('input', jsonString);
 
   // empty inventory slot
@@ -168,13 +170,13 @@ const simulateButtonPress = buttonString => {
 };
 
 // setup sockets
-const setupSocketIO = () => {
-  const buttons = document.querySelectorAll('td');
-  for (let i = 0; i < buttons.length; i++) {
+var setupSocketIO = function setupSocketIO() {
+  var buttons = document.querySelectorAll('td');
+  for (var i = 0; i < buttons.length; i++) {
     // universal touch event for all buttons
-    const setClick = function (btn) {
+    var setClick = function setClick(btn) {
       // only fire one of these, click or touch, not both
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', function () {
         if (!useClickOnly && !useTouchOnly) {
           useClickOnly = true;
         }
@@ -185,7 +187,7 @@ const setupSocketIO = () => {
       });
       // use this for mobile
       // commented out because it doesn't work with mouse
-      btn.addEventListener('touchstart', () => {
+      btn.addEventListener('touchstart', function () {
         if (!useClickOnly && !useTouchOnly) {
           useTouchOnly = true;
         }
@@ -197,11 +199,11 @@ const setupSocketIO = () => {
     };
     setClick(buttons[i]);
   }
-  controllerSocket.on('output', msg => {
+  controllerSocket.on('output', function (msg) {
     handleMessageFromGame(msg);
     output(msg);
   });
-  controllerSocket.on('join status', status => {
+  controllerSocket.on('join status', function (status) {
     if (status == 'success') {
       joinSucceed();
     } else {
@@ -209,34 +211,36 @@ const setupSocketIO = () => {
     }
   });
 };
+'use strict';
+
 // Inventory on the controller
 
-const images = {
+var images = {
   'red potion': 'images/pt1.png',
   'green potion': 'images/pt3.png',
   'blue potion': 'images/pt2.png',
   'orange potion': 'images/pt4.png'
 };
 
-const potions = ['red potion', 'green potion', 'blue potion'];
+var potions = ['red potion', 'green potion', 'blue potion'];
 
-const numPotions = {
+var numPotions = {
   'red potion': 0,
   'green potion': 0,
   'blue potion': 0
 };
 
-let gold = 0;
+var gold = 0;
 
-const inventory = [];
+var inventory = [];
 
-const slots = [];
+var slots = [];
 
-const counters = [];
+var counters = [];
 
-const controlButtons = [];
+var controlButtons = [];
 
-let selectedSlot = -1;
+var selectedSlot = -1;
 
 // add an item to the inventory
 function itemGet(itemString) {
@@ -272,17 +276,17 @@ function drinkPotion(potionName) {
 // inventory setup
 function inventoryInit() {
   // get references to slot html (table column children of element with id "inventory")
-  const slotNodes = document.querySelectorAll('#inventory .slot');
+  var slotNodes = document.querySelectorAll('#inventory .slot');
   for (var i = 0; i < slotNodes.length; ++i) {
     slots[i] = slotNodes[i]; // assign to a real array
   }
 
-  const counterNodes = document.querySelectorAll('#inventory .counter');
+  var counterNodes = document.querySelectorAll('#inventory .counter');
   for (var i = 0; i < counterNodes.length; ++i) {
     counters[i] = counterNodes[i]; // assign to a real array
   }
 
-  const btnNodes = document.querySelectorAll('#controls td');
+  var btnNodes = document.querySelectorAll('#controls td');
   for (var i = 0; i < btnNodes.length; ++i) {
     controlButtons[i] = btnNodes[i]; // assign to a real array
   }
@@ -310,8 +314,8 @@ function inventoryInit() {
 // window.addEventListener('load',inventoryInit);
 
 function addItemToFirstOpenSlot(itemName) {
-  output(`new item: ${itemName}`);
-  for (let i = 0; i < inventory.length; i++) {
+  output('new item: ' + itemName);
+  for (var i = 0; i < inventory.length; i++) {
     if (!inventory[i] || inventory[i] == '') {
       inventory[i] = itemName;
       updateInventorySlot(i);
@@ -326,16 +330,16 @@ function updateInventorySlot(index) {
   // output(images[inventory[index]].toString());
 
   // create a new div
-  const n = document.createElement('div');
+  var n = document.createElement('div');
   // correct image
-  n.style.backgroundImage = `url(${images[inventory[index]]})`;
+  n.style.backgroundImage = 'url(' + images[inventory[index]] + ')';
   // class name = item name
   // n.setAttribute("class",inventory[index]);
   n.setAttribute('class', 'pic');
   // event listener
-  n.addEventListener('touchstart', () => {
+  n.addEventListener('touchstart', function () {
     // debug
-    output(`${inventory[index]} tapped`);
+    output(inventory[index] + ' tapped');
 
     // if the slot is not selected, select it
     if (selectedSlot != index) {
@@ -352,20 +356,20 @@ function updateInventorySlot(index) {
 
 function createPotionSlot(index) {
   // create a new div
-  const n = document.createElement('div');
+  var n = document.createElement('div');
 
   // correct image
-  n.style.backgroundImage = `url(${images[potions[index]]})`;
+  n.style.backgroundImage = 'url(' + images[potions[index]] + ')';
 
   // class name = pic
   n.setAttribute('class', 'pic');
 
   // event listener
-  n.addEventListener('touchstart', () => {
+  n.addEventListener('touchstart', function () {
     // debug
-    output(`${potions[index]} tapped`);
+    output(potions[index] + ' tapped');
     if (numPotions[potions[index]] > 0) {
-      simulateButtonPress(`drink [${potions[index]}]`);
+      simulateButtonPress('drink [' + potions[index] + ']');
     }
   });
 
@@ -375,7 +379,7 @@ function createPotionSlot(index) {
 
 function addGold(num) {
   gold += num;
-  document.getElementById('goldBtn').innerHTML = `Gold:<br>${gold}`;
+  document.getElementById('goldBtn').innerHTML = 'Gold:<br>' + gold;
 }
 
 // show highlight on a slot
@@ -403,46 +407,48 @@ function updatePotionCounters() {
   counters[1].innerHTML = numPotions['green potion'];
   counters[2].innerHTML = numPotions['blue potion'];
 }
+'use strict';
+
 // utility consts
 
-const getRandomArrayIndex = (array, padding) => {
-  const pad = padding || 0;
+var getRandomArrayIndex = function getRandomArrayIndex(array, padding) {
+  var pad = padding || 0;
   return pad + Math.floor(Math.random() * (array.length - pad));
 };
 
-const getRandomArrayElem = (array, padding) => {
+var getRandomArrayElem = function getRandomArrayElem(array, padding) {
   array[getRandomArrayIndex(array, padding)];
 };
 
 // shortcut for document.querySelector
-const getByClass = className => {
-  document.querySelector(`.${className}`);
+var getByClass = function getByClass(className) {
+  document.querySelector('.' + className);
 };
 
 // shortcut for document.querySelector
-const getById = id => {
+var getById = function getById(id) {
   document.getElementById(id);
 };
 
 // checks to see if an element has a class
-const hasClass = (ele, cls) => {
-  !!ele.className.match(new RegExp(`(\\s|^)${cls}(\\s|$)`));
+var hasClass = function hasClass(ele, cls) {
+  !!ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
 };
 
 // adds a class to an element
-const addClass = (ele, cls) => {
-  if (!hasClass(ele, cls)) ele.className += ` ${cls}`;
+var addClass = function addClass(ele, cls) {
+  if (!hasClass(ele, cls)) ele.className += ' ' + cls;
 };
 
 // removes a class from an element
-const removeClass = (ele, cls) => {
+var removeClass = function removeClass(ele, cls) {
   if (hasClass(ele, cls)) {
-    const reg = new RegExp(`(\\s|^)${cls}(\\s|$)`);
+    var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
     ele.className = ele.className.replace(reg, ' ');
   }
 };
 
 // shorthand for querySelector
-const q = str => {
+var q = function q(str) {
   document.querySelector(str);
 };
