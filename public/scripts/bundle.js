@@ -479,8 +479,8 @@ var SubdivideRecursively = function SubdivideRecursively(cell, horiz, min, rando
     var o1 = 0;
     var o2 = 0;
     if (random) {
-      r1 = Math.floor(Math.random() * 4);
-      r2 = Math.floor(Math.random() * 4);
+      var r1 = Math.floor(Math.random() * 4);
+      var r2 = Math.floor(Math.random() * 4);
       if (r1 > 1) o1 = r1;
       if (r2 > 1) o2 = r2;
     }

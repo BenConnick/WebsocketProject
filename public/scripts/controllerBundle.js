@@ -30,7 +30,7 @@ var appInit = function appInit() {
   // get hp bar
   hpBar = document.getElementById('healthBar');
   // sound
-  yourTurnSound = document.getElementsByTagName('audio')[0];
+  //yourTurnSound = document.getElementsByTagName('audio')[0];
   // waiting message
   waitingMsg = document.getElementById('waitingForPlayers');
   // hook up name button

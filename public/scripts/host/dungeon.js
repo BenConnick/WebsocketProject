@@ -34,8 +34,8 @@ const SubdivideRecursively = (cell, horiz, min, random) => {
     let o1 = 0;
     let o2 = 0;
     if (random) {
-      r1 = Math.floor(Math.random() * 4);
-      r2 = Math.floor(Math.random() * 4);
+      const r1 = Math.floor(Math.random() * 4);
+      const r2 = Math.floor(Math.random() * 4);
       if (r1 > 1) o1 = r1;
       if (r2 > 1) o2 = r2;
     }
