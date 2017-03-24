@@ -5,7 +5,7 @@
   "main": "./src/server.js",
   "scripts": {
     "build": "babel ./src --out-file ./public/bundle.js",
-    "watch": "babel --watch ./client --out-file ./hosted/bundle.js",
+    "watch": "babel --watch ./public/scripts/host --out-file ./public/scripts/bundle.js",
     "nodemon": "nodemon --watch ./src ./src/server.js",
     "start": "node ./src/server.js",
     "pretest": "eslint ./src --fix",
@@ -18,6 +18,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
+    "babel-preset-env": "^1.2.2",
     "eslint": "^3.15.0",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",

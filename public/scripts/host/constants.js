@@ -1,4 +1,4 @@
-var constants = {
+const constants = {
 	tileSize: 32,
 	// js enum for directions
 	directions: { LEFT: 0, UP: 1, RIGHT: 2, DOWN: 3 },

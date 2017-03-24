@@ -1,11 +1,14 @@
-function Node(x,y) {
-	this.x = x;
-	this.y = y;
-	this.gScore = 0;
-	this.fScore = 0;
-	this.cameFrom = undefined;
+class Node {
+	constructor(x,y) {
+		this.x = x;
+		this.y = y;
+		this.gScore = 0;
+		this.fScore = 0;
+		this.cameFrom = undefined;
+	}
 }
 
+/*
 function Astar(nodes, start, goal, width) {
     // The set of nodes already evaluated.
     var closedSet = [];
@@ -78,21 +81,24 @@ function Astar(nodes, start, goal, width) {
 	}
     return false;
 }
-	
-function dist_between(a,b) {
+*/
+/*
+const dist_between = (a,b) => {
 	// if they are neighbors then the dist is 1
 	return 1;
 	//return Math.sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y));
 }
 
-function heuristic_cost_estimate(a,b) {
+const heuristic_cost_estimate = (a,b) => {
 	return Math.sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y));
 }
 
-function reconstruct_path(current) {
+const reconstruct_path = (current) => {
     total_path = [current];
-    while (current.cameFrom != undefined)
+    while (current.cameFrom != undefined) {
         current = current.cameFrom;
         total_path.push(current);
+    }
     return total_path;
 }
+*/

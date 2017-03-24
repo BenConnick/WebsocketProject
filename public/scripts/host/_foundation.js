@@ -1,63 +1,67 @@
 // foundational and base classes as well as misc.
 
 // game object base class
-function GameObject(x_,y_) {
-	this.x = x_ || 1;
-	this.y = y_ || 1;
+class GameObject {
+	constructor(x_,y_) {
+		this.x = x_ || 1;
+		this.y = y_ || 1;
+	}
 }
 
 // *** CHARACTER BASE CLASS ***
-function Character(name) {
-	// call parent constructor
-	GameObject.call(this);
+class Character extends GameObject {
+	constructor(name) {
+		// call parent constructor
+		super();
 	
-	// *** RPG ATTRIBUTES ***
-	// name
-	this.name = name || "unnamed";
-	// lvl
-	this.lvl = 1;
-	// xp
-	this.xp = 1;
-	// hp
-	this.maxHp = 1;
-	this.hp = 1;
-	// strength
-	this.strength = 1;
-	// defense
-	this.defense = 1; // dodge chance
-	this.dodge = function(attackerdefense) { 
-		return (Math.random() < this.defense/(this.defense+attackerdefense*10)) ? true : false; 
-	};
-	this.zapped = false;
+		// *** RPG ATTRIBUTES ***
+		// name
+		this.name = name || "unnamed";
+		// lvl
+		this.lvl = 1;
+		// xp
+		this.xp = 1;
+		// hp
+		this.maxHp = 1;
+		this.hp = 1;
+		// strength
+		this.strength = 1;
+		// defense
+		this.defense = 1; // dodge chance
+		this.dodge = function(attackerdefense) { 
+			return (Math.random() < this.defense/(this.defense+attackerdefense*10)) ? true : false; 
+		};
+		this.zapped = false;
 	
 	
-	// *** CHARACTER UTILITY ***
-	// player only boolean
-	this.isPlayer = false;
-	// don't allow player input if the player has already acted this turn
-	this.actionsLeft = 1;
-	// store player input here until it can be used
-	this.futurePos = { x: this.x, y: this.y }
+		// *** CHARACTER UTILITY ***
+		// player only boolean
+		this.isPlayer = false;
+		// don't allow player input if the player has already acted this turn
+		this.actionsLeft = 1;
+		// store player input here until it can be used
+		this.futurePos = { x: this.x, y: this.y }
 	
-	// *** DRAWING AND ANIMATION ***
-	// base sprite
-	this.image = undefined;
-	// offset for drawing
-	this.offsetX = 0;
-	this.offsetY = 0;
-	// when hit by an attack
-	this.shakingTimer = 0; // not implemented
-	// when attacking
-	this.attackDirection = 0; // not implemented
-	this.attackDirection = -1; // directions 0 to 3
-	// moving
-	this.prevPos = { x: 0, y: 0 }
-	this.moveTransitionStart = 0;
-	this.moveTransitionDuration = 100;
+		// *** DRAWING AND ANIMATION ***
+		// base sprite
+		this.image = undefined;
+		// offset for drawing
+		this.offsetX = 0;
+		this.offsetY = 0;
+		// when hit by an attack
+		this.shakingTimer = 0; // not implemented
+		// when attacking
+		this.attackDirection = 0; // not implemented
+		this.attackDirection = -1; // directions 0 to 3
+		// moving
+		this.prevPos = { x: 0, y: 0 }
+		this.moveTransitionStart = 0;
+		this.moveTransitionDuration = 100;
+	}
 	
 	// *** METHODS ***
 	// move one space given a direction and grid info
-	this.move = function(dir,floor) {
+	move(dir,floor) {
 		// check for able to act
 		if (this.actionsLeft < 1) return;
 		// subtract action
@@ -131,7 +135,7 @@ function Character(name) {
 		this.zapped = false;
 	};
 	
-	this.getProjection = function(dir) {
+	getProjection(dir) {
 		var projection = {x: this.x, y: this.y}
 		switch(constants.directions[dir]) {
 			case constants.directions.LEFT:
@@ -150,7 +154,7 @@ function Character(name) {
 		return projection;
 	}
 	
-	this.checkAndResolveCollision = function(x,y) {
+	checkAndResolveCollision(x,y) {
 		// get target of the appropriate type
 		var target = gameTools.checkForOpponent(this.isPlayer,x,y);
 		// attack
@@ -160,7 +164,7 @@ function Character(name) {
 		}
 	}
 	
-	this.damage = function(num,xpCallback) { 
+	damage(num,xpCallback) { 
 		this.hp-=num;
 		if (this.hp > this.maxHp) {
 			this.hp = this.maxHp;
@@ -179,7 +183,7 @@ function Character(name) {
 	}
 	
 	// attack target
-	this.attack = function(target) {
+	attack(target) {
 		// if the target is invalid, escape
 		if (target.hp == undefined) return;
 		// roll for dodge
@@ -197,7 +201,7 @@ function Character(name) {
 	};
 	
 	// draw on the screen
-	this.draw = function(ctx) {
+	draw(ctx) {
 		ctx.save(); 
 		
 		// transition percent
@@ -232,7 +236,7 @@ function Character(name) {
 		ctx.restore();
 	}
 	
-	this.applyEffect = function(effectName, origin) {
+	applyEffect(effectName, origin) {
 		// debug
 		console.log("potion effect: "+effectName);
 	
@@ -256,7 +260,7 @@ function Character(name) {
 	
 	// damage all of the spaces around a character (chain reaction)
 	// origin is the character that started the lightning chain
-	this.lightningBurst = function(origin) {
+	lightningBurst(origin) {
 		// visual
 		var pos = { x: this.x*constants.tileSize, y: this.y*constants.tileSize };
 		// debug
@@ -277,11 +281,11 @@ function Character(name) {
 			}
 		}
 		// damage self last
-		this.damage(constants.lightningDamage,function(val) { if (origin.addXp) origin.addXp(val); });
+		//this.damage(constants.lightningDamage,function(val) { if (origin.addXp) origin.addXp(val); });
 	}
 	
 	// boost a stat for a set duration
-	this.temporaryStatBoost = function(func, amount, duration) {
+	temporaryStatBoost(func, amount, duration) {
 		// change stat
 		func(this,amount);
 		// reference to self
@@ -294,24 +298,25 @@ function Character(name) {
 	}
 	
 	// strength boost or nerf
-	this.addStrength = function(target,amount) {
+	addStrength(target,amount) {
 		var color = "#a00";
 		effectsManager.addHitMarker(amount,{x: target.x*constants.tileSize,y: target.y*constants.tileSize}, color, true);
 		target.strength += amount;
 	}
 	
 	// defense boost or nerf
-	this.addDefense = function(target,amount) {
+	addDefense(target,amount) {
 		var color = "yellow";
 		effectsManager.addHitMarker(amount,{x: target.x*constants.tileSize,y: target.y*constants.tileSize}, color, true);
 		target.defense += amount;
 	}
 }
 // inheritance
-Character.prototype = Object.create(GameObject.prototype);
-Character.prototype.constructor = Character;
+//Character.prototype = Object.create(GameObject.prototype);
+//Character.prototype.constructor = Character;
 
-gameTools = {
+// container for helper functions 
+const gameTools = {
 	checkForOpponent: function(isPlayer,x,y) {
 		if (isPlayer) {
 			return gameTools.checkForEnemy(x,y);
@@ -342,7 +347,9 @@ gameTools = {
 		}
 	}
 }
-powers = {
+
+// container for powers
+const powers = {
 	lightningBurst: function(originPlayer,xStart,yStart) {
 		var pos = { x: xStart*constants.tileSize, y: yStart*constants.tileSize };
 		effectsManager.addSpark(pos);

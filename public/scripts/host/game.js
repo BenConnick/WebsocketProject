@@ -1,35 +1,35 @@
 // *** GAME SCRIPT ***
 
 // canvas elem
-var canvas;
-var ctx;
+let canvas;
+let ctx;
 // the dungeon object
-var dungeon;
+let dungeon;
 // the spawn point on the current floor
-var spawn = { x: 0, y: 0};
+const spawn = { x: 0, y: 0};
 // the lowest floor the player has been to
-var bottomFloorNum = -1;
+let bottomFloorNum = -1;
 // the current floor index
-var currentFloorNum = -1;
+let currentFloorNum = -1;
 // floor reference
-var currentFloor;
+let currentFloor;
 // the list of players
-var players = [];
+const players = [];
 // A* nodes
-var nodeMap = [];
+const nodeMap = [];
 // timer
-var startTime = 0;	
-var gameTime = 0; 
-var skippedTime = 0;
-var turnCount = 0;
-var turnInterval = 500;
+let startTime = 0;	
+let gameTime = 0; 
+let skippedTime = 0;
+let turnCount = 0;
+const turnInterval = 500;
 // offline if file url
-var offline = (window.location.toString()[0] == "f");
+let offline = (window.location.toString()[0] == "f");
 console.log(offline);
-var gridDimensions = { x: 18, 	y: 12 };
+const gridDimensions = { x: 18, y: 12 };
 
 // initialize variables
-function init() {
+const init = () => {
 	canvas = document.querySelector("canvas");
 	document.querySelector("#fullscreenBtn").onclick = fullScreen;
 	canvas.onclick = fullScreen;
@@ -40,8 +40,8 @@ function init() {
 }
 window.addEventListener('load',init);
 
-function fullScreen() {
-	var elem = canvas;
+const fullScreen = () => {
+	let elem = canvas;
 	if (elem.requestFullscreen) {
 	  elem.requestFullscreen();
 	} else if (elem.msRequestFullscreen) {
@@ -53,7 +53,7 @@ function fullScreen() {
 	}
 }
 
-function startGame() {
+const startGame = () => {
 	// start the timer
 	gameTime = startTime = Date.now();
 	
@@ -66,7 +66,7 @@ function startGame() {
 	gameLoop();
 }
 
-function activateOfflineCharacter() {
+const activateOfflineCharacter = () => {
 	addPlayer("offline");
 	window.addEventListener("keydown",function(e) {
 		if (e.ctrlKey) {
@@ -102,7 +102,7 @@ function activateOfflineCharacter() {
 }
 
 // every tick
-function gameLoop() {
+const gameLoop = () => {
 	//console.log("lop");
 	gameTime = skippedTime + Date.now() - startTime;
 	if (gameTime - turnCount*turnInterval > turnInterval) {
@@ -115,7 +115,7 @@ function gameLoop() {
 }
 
 // modify turn-based game values
-function update() {
+const update = () => {
 	currentFloor.enemies.forEach(function(enemy) {
 		if (currentFloor.rooms[enemy.roomNum].visible)
 			enemy.updateBehavior();
@@ -130,15 +130,15 @@ function update() {
 }
 
 // draw to the screen
-function draw() {
+const draw = () => {
 	// reset transform (scale 3)
-	var gScale = 2;
+	let gScale = 2;
 	ctx.setTransform(gScale, 0, 0, gScale, 0, gScale);
 	// draw floor
 	currentFloor.display(ctx);
 	
 	// asfdasdfasfd
-	var index = 0;
+	let index = 0;
 	// draw players
 	players.forEach(function(player) {
 		index++;
@@ -179,7 +179,7 @@ function draw() {
 
 // generate a new dungeon floor
 // or go back to a previous one
-function goToFloor(level) {
+const goToFloor = (level) => {
 	// error checking
 	if (!level || level < 0) level = 0;
 	
@@ -198,12 +198,12 @@ function goToFloor(level) {
 		dungeon.addFloor(gridDimensions.x,gridDimensions.y);
 		/*nodeMap.length
 		// create nodes
-		var map = [];
+		let map = [];
 		// create a grid with [width] columns
-		for (var i=0; i<currentFloor.width; i++) {
-			var col = [];
+		for (let i=0; i<currentFloor.width; i++) {
+			let col = [];
 			// create a column with [height] tiles
-			for (var j=0; j<currentFloor.height; j++) {
+			for (let j=0; j<currentFloor.height; j++) {
 				col.push(new Node(i,j));
 			}
 			// double nested
@@ -223,20 +223,15 @@ function goToFloor(level) {
 	spawn.y = currentFloor.spawn.y;
 }
 
-// shows the tiles in a room
-function displayRoom(room) {
-
-}
-
 // deals with controller inputs
-function handlePlayerInput(msg) {
+const handlePlayerInput = (msg) => {
 	console.log("input: " + msg);
-	var inputData = JSON.parse(msg);
-	var p = getPlayer(inputData.name);
+	let inputData = JSON.parse(msg);
+	let p = getPlayer(inputData.name);
 	if (!p) p = addPlayer(inputData.name);
 	if (inputData.btn.indexOf("THROW") >= 0) {
 		// extract direction (after THROW_)
-		var direction = inputData.btn.substring(6, inputData.btn.length);
+		let direction = inputData.btn.substring(6, inputData.btn.length);
 		// throw the item
 		p.throwItem(inputData.item, direction); 
 	} else if (inputData.btn.indexOf("drink") >= 0) {
@@ -248,32 +243,34 @@ function handlePlayerInput(msg) {
 	checkForAllReady();
 }
 
-function checkForAllReady() {
-	var done = true;
+// chech that all players have no moves left
+const checkForAllReady = () => {
+	let done = true;
 	players.forEach(function(player) {
 		if (player.actionsLeft > 0) done = false;
 	});
 	// if done, skip to turn end
 	if (done) {
 		// shorthand
-		var gameTime = skippedTime + Date.now() - startTime;
+		let gameTime = skippedTime + Date.now() - startTime;
 		// skip ahead to next turn
 		skippedTime += (turnInterval - (gameTime - turnCount*turnInterval));
 	}
 }
 
 // retrieves a player with a given name
-function getPlayer(name) {
-	for (var i=0; i<players.length; i++) {
+const getPlayer = (name) => {
+	for (let i=0; i<players.length; i++) {
 		if (players[i].name == name)
 		return players[i];
 	}
 }
 
-function addPlayer(name, type) {
+// add a new player
+const addPlayer = (name, type) => {
 	if (getPlayer(name)) return;
 	console.log("added " + name);
-	var newb = new Player(name,type);
+	let newb = new Player(name,type);
 	newb.x = spawn.x;
 	newb.y = spawn.y;
 	newb.prevPos.x = spawn.x;
@@ -283,7 +280,8 @@ function addPlayer(name, type) {
 	console.log(players);
 }
 
-function drawTimer(ctx,pos,percent) {
+// draw the turn timer
+const drawTimer = (ctx,pos,percent) => {
 	ctx.save();
 	ctx.fillStyle = "white";
 	ctx.beginPath();

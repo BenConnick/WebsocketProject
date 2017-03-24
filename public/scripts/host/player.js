@@ -1,66 +1,73 @@
 // *** global scope character data ***
 
 // how much xp is needed to reach this level
-var xpRequirements = [
+const xpRequirements = [
 	5,15,30,50,75,100
 ];
 // store all possible images
-var characterImages = [];
-for (var i=1; i<7; i++) {
-	createDwarfImg(i);
-}
+const characterImages = [];
 // load all the images
-function createDwarfImg(i) {
-	var img = new Image();
+const createDwarfImg = (i) => {
+	let img = new Image();
 	img.src = "images/dwarf"+i+".png";
 	characterImages.push(img);
-}
+};
+window.addEventListener("load",() => {
+	for (let i=1; i<7; i++) {
+		createDwarfImg(i);
+	};
+});
 
 // *** PLAYER CLASS ***
-function Player(name_, type_) {
-	// call parent constructor
-	Character.call(this, name_);
+class Player extends Character {
+	constructor(name_, type_) {
+		// call parent constructor
+		super(name_);
 	
-	// *** character rpg attributes ***
-	// name
-	this.name = name_ || "unnamed";
-	// lvl
-	this.lvl = 1;
-	// xp
-	this.xp = 0;
-	// hp
-	this.maxHp = 15;
-	this.hp = 15;
-	// strength
-	this.strength = 4;
-	// intelligence
-	this.intelligence = 1;
-	// defense
-	this.defense = 2; // dodge chance
-	this.dodge = function(attackerdefense) { 
+		// *** character rpg attributes ***
+		// name
+		this.name = name_ || "unnamed";
+		// lvl
+		this.lvl = 1;
+		// xp
+		this.xp = 0;
+		// hp
+		this.maxHp = 15;
+		this.hp = 15;
+		// strength
+		this.strength = 4;
+		// intelligence
+		this.intelligence = 1;
+		// defense
+		this.defense = 2; // dodge chance
+	
+	
+		// define as player
+		this.isPlayer = true;
+		// class (type)
+		this.type = type_ || "Strong Murderhobo";
+		// weapon
+		this.weapon = weapons["stick"];
+		// differentiate characters
+		this.color = Math.floor(Math.random() * 5);
+		this.image = characterImages[this.color];
+		this.inventory = [];
+		// drawing
+		this.visible = true;
+	}
+	
+	dodge(attackerdefense) { 
 		return (Math.random() < this.defense/(this.defense+attackerdefense*10)) ? true : false; 
 	};
-	// define as player
-	this.isPlayer = true;
-	// class (type)
-	this.type = type_ || "Strong Murderhobo";
-	// weapon
-	this.weapon = weapons["stick"];
-	// differentiate characters
-	this.color = Math.floor(Math.random() * 5);
-	this.image = characterImages[this.color];
-	this.inventory = [];
-	// drawing
-	this.visible = true;
 	
 	// add xp for
-	this.addXp = function(val) {
+	addXp(val) {
 		this.xp+=val;
 		this.checkForLvlUp();
 	}
 	
 	// check to see if the player has enough xp
-	this.checkForLvlUp = function() {
+	checkForLvlUp() {
 		if (this.lvl < this.xp - xpRequirements[this.lvl-1]) {
 			// level up!!!
 			this.lvl++;
@@ -74,17 +81,17 @@ function Player(name_, type_) {
 	}
 	
 	// throw an item (currently limited to potions)
-	this.throwItem = function(itemName, direction) {
+	throwItem(itemName, direction) {
 		// debug
 		console.log("throwing "+itemName+" "+direction);
 		// remove from inventory
-		var item = this.inventory.splice(this.inventory.indexOf(itemName),1);
+		let item = this.inventory.splice(this.inventory.indexOf(itemName),1);
 		// find out where the potion will land
-		var landingSpot = this.getProjection(direction);
+		let landingSpot = this.getProjection(direction);
 		// which effect?
-		var effect = potionTypes[itemName];		
+		let effect = potionTypes[itemName];		
 		// apply effect based on what the item hits
-		var target = gameTools.checkForEnemy(landingSpot.x,landingSpot.y);
+		let target = gameTools.checkForEnemy(landingSpot.x,landingSpot.y);
 		// if the target exists and so does the effect
 		if (target && effect) {
 			target.applyEffect(effect, this);
@@ -94,7 +101,7 @@ function Player(name_, type_) {
 	}
 	
 	// apply a potion's effect to the player
-	this.drinkPotion = function(itemName) {
+	drinkPotion(itemName) {
 		// debug
 		console.log("drinking "+itemName);
 	
@@ -103,15 +110,15 @@ function Player(name_, type_) {
 		// check valid
 		if (!item) { return; }
 		// which effect?
-		var effect = potionTypes[itemName];		
+		let effect = potionTypes[itemName];		
 		// apply
 		if (effect) this.applyEffect(effect, this);
 	}	
 	
-	this.checkAndResolveCollision = function(x,y) {
+	checkAndResolveCollision(x,y) {
 		
 		// look for enemy
-		var target = gameTools.checkForEnemy(x,y);
+		let target = gameTools.checkForEnemy(x,y);
 		// attack
 		if (target) {
 			this.attack(target);
@@ -121,7 +128,7 @@ function Player(name_, type_) {
 		// look for loot
 		target = gameTools.checkForItem(x,y);
 		if (target) {
-			var  msg = "ITEM GET: " + target.name;
+			let  msg = "ITEM GET: " + target.name;
 			if (target.name == "gold") {
 				this.gold += target.num;
 				msg += " " + target.num;
@@ -135,12 +142,12 @@ function Player(name_, type_) {
 		}
 	}
 	
-	this.hitWall = function() {
+	hitWall() {
 		// message phone
 		send(this.name,"you hit a wall");
 	}
 	
-	this.death = function() {
+	death() {
 		// kill
 		console.log("you died");
 		send(this.name,"you died");
@@ -151,7 +158,7 @@ function Player(name_, type_) {
 		this.y = spawn.y;
 		this.hp = this.maxHp;
 	}
-	this.reset = function() {
+	reset() {
 		// lvl
 		this.lvl = 1;
 		// xp
@@ -169,6 +176,6 @@ function Player(name_, type_) {
 	}
 }
 // inheritance
-Player.prototype = Object.create(Character.prototype);
-Player.prototype.constructor = Player;
+//Player.prototype = Object.create(Character.prototype);
+//Player.prototype.constructor = Player;
 

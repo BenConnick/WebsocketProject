@@ -6,11 +6,14 @@ const loadDirectoryIntoDictionary = (dic, extension) => {
   const fileNames = fs.readdirSync(`${__dirname}/../public/${extension}/`);
   const dictionary = dic;
   fileNames.forEach((name) => {
-    // skip directories
-    if (name.indexOf('.') < 0) return;
-    // the files stored as a dictionary
-    // dictionary { key: file name with slash, value: file contents }
-    dictionary[`/${name}`] = fs.readFileSync(`${__dirname}/../public/${extension}/${name}`);
+    // recurse into directories
+    if (name.indexOf('.') < 0) {
+      loadDirectoryIntoDictionary(dic, `${extension}/${name}`);
+    } else {
+      // the files stored as a dictionary
+      // dictionary { key: file name with slash, value: file contents }
+      dictionary[`${extension}/${name}`] = fs.readFileSync(`${__dirname}/../public/${extension}/${name}`);
+    }
   });
 };
 
@@ -40,7 +43,7 @@ const serveHost = (response) => {
 
 const serveScript = (scriptName, response) => {
   // get already-loaded script
-  const requestedScript = gameScripts[scriptName];
+  const requestedScript = gameScripts[`scripts${scriptName}`];
   // undefined error
   if (!requestedScript) {
     throw new Error(`file "${scriptName}" was not loaded`);
@@ -55,8 +58,8 @@ const serveScript = (scriptName, response) => {
 const serveImage = (imgName, response) => {
   let imageName = imgName;
   // remove extension, just file name
-  if (imageName.indexOf('/images/') > -1) {
-    imageName = imageName.slice(imageName.indexOf('/images/') + 7, imageName.length);
+  if (imageName.indexOf('/') > -1) {
+    imageName = imageName.slice(imageName.indexOf('/') + 1, imageName.length);
   }
 
   // get already-loaded script

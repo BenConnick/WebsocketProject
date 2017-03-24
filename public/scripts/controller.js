@@ -1,28 +1,28 @@
 // CONTROLLER VARIABLES
 
 // html elements
-var outputDiv;
-var controls;
-var hpBar;
+let outputDiv;
+let controls;
+let hpBar;
 
 // sockets and online things
-var socket = io();
-var name = "bob";
-var roomKey = "";
+const controllerSocket = io();
+let name = "bob";
+let roomKey = "";
 
 // gameplay utils
-var waitingMsg;
-var failSafe;
-var itemInfo = ""; // send item info to the game
+let waitingMsg;
+let failSafe;
+let itemInfo = ""; // send item info to the game
 
 // controller properties
-var useClickOnly = false;
-var useTouchOnly = false;
+let useClickOnly = false;
+let useTouchOnly = false;
 
 // CONTROLLER FUNCTIONS
 
 // set up on start
-function appInit() {
+const appInit = () => {
 	// get controls table
 	controls = document.getElementById("controls");
 	// get hp bar
@@ -54,15 +54,15 @@ function appInit() {
 }
 
 // join a game
-function attemptJoin() {
+const attemptJoin = ()  => {
 	name = document.getElementById("nameInput").value;
 	roomKey = document.getElementById("roomInput").value.toUpperCase();
 	var json = '{ "name": "' + name + '", ' + '"roomKey": "' + roomKey + '" }';
-	socket.emit('join', json);
+	controllerSocket.emit('join', json);
 }
 
 // game replied OK
-function joinSucceed() {
+const joinSucceed = () => {
 	document.getElementById("nameScreen").style.display = "none";
 	document.getElementById("controllerScreen").style.display = "block";
 	// show welcome msg
@@ -70,23 +70,23 @@ function joinSucceed() {
 }
 
 // if there was an error, alert
-function joinFail(status) {
+const joinFail = (status) => {
 	alert(status);
 }
 
 // print to the onscreen log
-function output(str) {
+const output = (str) => {
 	outputDiv.innerHTML = str + "<br>" + outputDiv.innerHTML.substring(0,2000);
 }
 
 // start a turn (not used)
-function turnStart() {
+const turnStart = () => {
 	setControlsVisibility(true);
 	yourTurnSound.play();
 }
 
 // show the movement controls
-function setControlsVisibility(visible) {
+const setControlsVisibility = (visible) => {
 	if (visible) {
 		controls.style.opacity = 1;
 		controls.style.pointerEvents = 'auto';
@@ -102,30 +102,31 @@ function setControlsVisibility(visible) {
 }
 
 // if the connection times out, the controls might be locked
-function updateFailed() {
+const updateFailed = () => {
 	setControlsVisibility(true);
 	alert("failsafe triggered after 5 seconds of no message from the server");
 }
 
 // set the healthbar
-function setHealthBar(percent) {
+const setHealthBar = (percent) => {
 	hpBar.style.width = "" + (percent*100) + "%"
 }
 
 // debugger
-function mobileDebug(enabled) {
+const mobileDebug = (enabled) => {
 	if (enabled) {
 		window.onerror = function(errorMsg, url, linenumber) { handleErrorMobile(errorMsg, url, linenumber); };
 	} else {
 		//dbg.style.display = "none";
 	}
 }
-function handleErrorMobile(errorMsg, url, linenumber) {
+
+const handleErrorMobile = (errorMsg, url, linenumber) => {
 	output(errorMsg + ": line " + linenumber);
 }
 
 // When the game gives a response, record it 
-function handleMessageFromGame(msg) {
+const handleMessageFromGame = (msg) => {
 	// player got an item
 	if (msg.indexOf("ITEM GET: ") > -1) {
 		// add to inventory (handled in inventory.js)
@@ -137,7 +138,7 @@ function handleMessageFromGame(msg) {
 window.addEventListener('load',appInit);
 
 // button pressed, make quick adjustments
-function preSendActions(btnType) {
+const preSendActions = (btnType) => {
 	// if the action involved an inventory item
 	if (btnType.indexOf("drink") >= 0) {
 		// send item info to the game
@@ -145,7 +146,7 @@ function preSendActions(btnType) {
 	}
 }
 
-function postSendActions(btnType) {
+const postSendActions = (btnType) => {
 	if (btnType.indexOf("drink") >= 0) {
 		drinkPotion(itemInfo);
 		// clear meta
@@ -153,7 +154,7 @@ function postSendActions(btnType) {
 	}
 }
 
-function simulateButtonPress(buttonString) {
+const simulateButtonPress = (buttonString) => {
 	// change the item text to fit
 			preSendActions(buttonString);
 			
@@ -162,14 +163,14 @@ function simulateButtonPress(buttonString) {
 			+'"name": "'+name+'", '
 			+'"btn": "'+buttonString+'", '
 			+'"item": "'+itemInfo+'" }';
-			socket.emit('input', jsonString);
+			controllerSocket.emit('input', jsonString);
 			
 			// empty inventory slot
 			postSendActions(buttonString);
 }
 
 // setup sockets
-function setupSocketIO() {
+const setupSocketIO = () => {
   var buttons = document.querySelectorAll("td");
   for (var i=0; i<buttons.length; i++) {
   	  // universal touch event for all buttons
@@ -194,11 +195,11 @@ function setupSocketIO() {
 	   }
 	   setClick(buttons[i]);
   }
-  socket.on('output', function(msg) {
+  controllerSocket.on('output', function(msg) {
   	handleMessageFromGame(msg)
 	output(msg);
   });
-  socket.on('join status', function(status) {
+  controllerSocket.on('join status', function(status) {
 	if (status == "success")
 		joinSucceed();
 	else {
