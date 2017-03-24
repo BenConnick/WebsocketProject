@@ -104,9 +104,19 @@ const onHostAnnounce = (sock) => {
   });
 };
 
+const onFeedback = (sock) => {
+  // send a specific controller the feedback from the game
+  // ----------------------------------
+  sock.on('feedback', (feedback) => {
+  // json
+    const o = JSON.parse(feedback);
+  // get name and make sure it exists
+    sock.to(playerHandler.getPlayerSocketFromName(o.name)).emit('output', o.message);
+  });
+};
+
 const onDisconnect = (sock) => {
   const socket = sock;
-
 
   socket.on('disconnect', () => {
     // message for remaining users
@@ -132,6 +142,7 @@ io.sockets.on('connection', (socket) => {
   onHostAnnounce(socket);
   onInput(socket);
   onDisconnect(socket);
+  onFeedback(socket);
 });
 
 console.log('websocket server started');

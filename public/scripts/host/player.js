@@ -127,15 +127,21 @@ class Player extends Character {
     // look for loot
     target = gameTools.checkForItem(x, y);
     if (target) {
-      let msg = `ITEM GET: ${target.name}`;
-      if (target.name === 'gold') {
-        this.gold += target.num;
-        msg += ` ${target.num}`;
+      // if potion, use immediately
+      if (target.name.indexOf("potion" > -1)) {
+        this.drinkPotion(target.name);
       } else {
-        this.inventory.push(target);
+        let msg = `ITEM GET: ${target.name}`;
+        if (target.name === 'gold') {
+          this.gold += target.num;
+          msg += ` ${target.num}`;
+        } else {
+          this.inventory.push(target);
+        }
+        // update the controller inventory
+        send(this.name, msg);
       }
-      // update the controller inventory
-      send(this.name, msg);
+      // remove from floor
       target.removeFromFloor();
       return true;
     }

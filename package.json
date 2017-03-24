@@ -5,7 +5,9 @@
   "main": "./src/server.js",
   "scripts": {
     "build": "babel ./src --out-file ./public/bundle.js",
-    "watch": "babel --watch ./public/scripts/host --out-file ./public/scripts/bundle.js",
+    "watch": "npm run watch-host & npm run watch-controller",
+    "watch-host": "babel --watch ./public/scripts/host --out-file ./public/scripts/bundle.js",
+    "watch-controller": "babel --watch ./public/scripts/controller --out-file ./public/scripts/controllerBundle.js",
     "nodemon": "nodemon --watch ./src ./src/server.js",
     "start": "node ./src/server.js",
     "pretest": "eslint ./src --fix",

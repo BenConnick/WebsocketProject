@@ -308,15 +308,15 @@ class Character extends GameObject {
 
   // strength boost or nerf
   addStrength(target, amount) {
-    const color = '#a00';
-    effectsManager.addHitMarker(amount, { x: target.x * constants.tileSize, y: target.y * constants.tileSize }, color, true);
+    const color = '#3a5';
+    effectsManager.addHitMarker(-1 * amount, { x: target.x * constants.tileSize, y: target.y * constants.tileSize }, color);
     target.strength += amount;
   }
 
   // defense boost or nerf
   addDefense(target, amount) {
     const color = 'yellow';
-    effectsManager.addHitMarker(amount, { x: target.x * constants.tileSize, y: target.y * constants.tileSize }, color, true);
+    effectsManager.addHitMarker(amount, { x: target.x * constants.tileSize, y: target.y * constants.tileSize }, color);
     target.defense += amount;
   }
 }
@@ -733,8 +733,8 @@ class Dungeon {
 const effectsManager = {
   hitMarkers: [],
   sparks: [],
-  addHitMarker(num, pos, color) {
-    this.hitMarkers.push(new HitMarker(num, pos, 1000, color));
+  addHitMarker(num, pos, color, multiplier) {
+    this.hitMarkers.push(new HitMarker(num, pos, 1000, color, multiplier));
   },
   addSpark(pos, color) {
     this.sparks.push(new Spark(pos, 1000, color));
@@ -1722,15 +1722,21 @@ class Player extends Character {
     // look for loot
     target = gameTools.checkForItem(x, y);
     if (target) {
-      let msg = `ITEM GET: ${target.name}`;
-      if (target.name === 'gold') {
-        this.gold += target.num;
-        msg += ` ${target.num}`;
+      // if potion, use immediately
+      if (target.name.indexOf("potion" > -1)) {
+        this.drinkPotion(target.name);
       } else {
-        this.inventory.push(target);
+        let msg = `ITEM GET: ${target.name}`;
+        if (target.name === 'gold') {
+          this.gold += target.num;
+          msg += ` ${target.num}`;
+        } else {
+          this.inventory.push(target);
+        }
+        // update the controller inventory
+        send(this.name, msg);
       }
-      // update the controller inventory
-      send(this.name, msg);
+      // remove from floor
       target.removeFromFloor();
       return true;
     }

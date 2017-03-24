@@ -2,8 +2,8 @@
 const effectsManager = {
   hitMarkers: [],
   sparks: [],
-  addHitMarker(num, pos, color) {
-    this.hitMarkers.push(new HitMarker(num, pos, 1000, color));
+  addHitMarker(num, pos, color,multiplier) {
+    this.hitMarkers.push(new HitMarker(num, pos, 1000, color,multiplier));
   },
   addSpark(pos, color) {
     this.sparks.push(new Spark(pos, 1000, color));

@@ -297,15 +297,15 @@ class Character extends GameObject {
 
   // strength boost or nerf
   addStrength(target, amount) {
-    const color = '#a00';
-    effectsManager.addHitMarker(amount, { x: target.x * constants.tileSize, y: target.y * constants.tileSize }, color, true);
+    const color = '#3a5';
+    effectsManager.addHitMarker(-1 * amount, { x: target.x * constants.tileSize, y: target.y * constants.tileSize }, color);
     target.strength += amount;
   }
 
   // defense boost or nerf
   addDefense(target, amount) {
     const color = 'yellow';
-    effectsManager.addHitMarker(amount, { x: target.x * constants.tileSize, y: target.y * constants.tileSize }, color, true);
+    effectsManager.addHitMarker(amount, { x: target.x * constants.tileSize, y: target.y * constants.tileSize }, color);
     target.defense += amount;
   }
 }

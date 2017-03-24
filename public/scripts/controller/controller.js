@@ -50,7 +50,7 @@ const appInit = () => {
     // document.getElementById("controllerScreen").style.display = "block";
   }
 
-  inventoryInit();
+  //inventoryInit();
 };
 
 // join a game
@@ -129,7 +129,7 @@ const handleMessageFromGame = (msg) => {
   // player got an item
   if (msg.indexOf('ITEM GET: ') > -1) {
     // add to inventory (handled in inventory.js)
-    itemGet(msg.substring(10));
+    //itemGet(msg.substring(10));
   }
 };
 
@@ -157,14 +157,14 @@ const simulateButtonPress = (buttonString) => {
   // change the item text to fit
   preSendActions(buttonString);
 
-      // create a json string with information about the controller's button press
+  // create a json string with information about the controller's button press
   const jsonString = `${'{'
       + '"name": "'}${name}", `
       + `"btn": "${buttonString}", `
       + `"item": "${itemInfo}" }`;
   controllerSocket.emit('input', jsonString);
 
-      // empty inventory slot
+  // empty inventory slot
   postSendActions(buttonString);
 };
 
