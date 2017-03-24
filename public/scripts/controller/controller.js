@@ -21,8 +21,6 @@ let useTouchOnly = false;
 
 // CONTROLLER FUNCTIONS
 
-window.onerror =  (errorMsg, url, linenumber) => { handleErrorMobile(errorMsg, url, linenumber); };
-
 // set up on start
 const appInit = () => {
   // get controls table
@@ -51,6 +49,7 @@ const appInit = () => {
     // document.getElementById("nameScreen").style.display = "none";
     // document.getElementById("controllerScreen").style.display = "block";
   }
+
   //inventoryInit();
 };
 
