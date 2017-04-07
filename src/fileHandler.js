@@ -26,13 +26,18 @@ const gameImages = {};
 loadDirectoryIntoDictionary(gameImages, 'images');
 
 // const index = fs.readFileSync(`${__dirname}/../client/client.html`);
-//const controllerPage = fs.readFileSync(`${__dirname}/../public/controller.html`);
-//const hostPage = fs.readFileSync(`${__dirname}/../public/game.html`);
-const clientPage = fs.readFileSync(`${__dirname}/../public/game.html`);
+const controllerPage = fs.readFileSync(`${__dirname}/../public/controller.html`);
+const hostPage = fs.readFileSync(`${__dirname}/../public/game.html`);
 
-const servePage = (response) => {
+const serveController = (response) => {
   response.writeHead(200, { 'Content-Type': 'text/html' });
-  response.write(clientPage);
+  response.write(controllerPage);
+  response.end();
+};
+
+const serveHost = (response) => {
+  response.writeHead(200, { 'Content-Type': 'text/html' });
+  response.write(hostPage);
   response.end();
 };
 
@@ -69,6 +74,7 @@ const serveImage = (imgName, response) => {
   response.end();
 };
 
-module.exports.servePage = servePage;
+module.exports.serveController = serveController;
+module.exports.serveHost = serveHost;
 module.exports.serveScript = serveScript;
 module.exports.serveImage = serveImage;
